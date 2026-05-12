@@ -11,18 +11,46 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::create('departments', function (Blueprint $table) {
+            $table->id();
+
+            $table->string('code')->unique();
+            $table->string('name');
+            $table->string('queue_prefix', 10);
+            $table->string('room_name');
+
+            $table->integer('current_queue')->default(0);
+
+            $table->boolean('is_registration')->default(false);
+            $table->boolean('is_payment_gateway')->default(false);
+            $table->boolean('is_active')->default(true);
+
+            $table->text('description')->nullable();
+
+            $table->timestamps();
+        });
+
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
+
+            $table->foreignId('department_id')->nullable()->constrained()->nullOnDelete();
+
+            $table->string('full_name');
+            $table->string('username')->unique();
             $table->string('password');
+            $table->string('phone')->nullable();
+            $table->string('avatar')->nullable();
+
+            $table->timestamp('last_login_at')->nullable();
+
+            $table->boolean('is_active')->default(true);
+
             $table->rememberToken();
             $table->timestamps();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
-            $table->string('email')->primary();
+            $table->string('username')->primary();
             $table->string('token');
             $table->timestamp('created_at')->nullable();
         });
